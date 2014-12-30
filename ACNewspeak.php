@@ -38,18 +38,20 @@ class ACNewspeak {
    
    public function generate_newspeak_sentence($i=0) {
       
-      $dependent_clause = $this->prepositions[$i].' '.$this->nominal_groups[$i];
+      $dependent_clause = trim($this->prepositions[$i]).' '.trim($this->nominal_groups[$i]);
+      
+      $verb = trim($this->verbs[$i]);
    
       $hide_adverb = rand(0,3);
-      if( mb_substr($this->verbs[$i], -1, 1, "UTF-8") == 'à' || mb_substr($this->verbs[$i], -2, 2, "UTF-8") == 'de' ) {
+      if( mb_substr($verb, -1, 1, "UTF-8") == 'à' || mb_substr($verb, -2, 2, "UTF-8") == 'de' ) {
          $hide_adverb = true;
       }
       $adverb = '';
       if( !$hide_adverb ) {
-         $adverb = ' '.$this->adverbs[$i];
+         $adverb = ' '.trim($this->adverbs[$i]);
       }
 
-      $independent_clause = $this->subjects[$i].' '.$this->verbs[$i].$adverb.' '.$this->nominal_groups[($i+1)*2];
+      $independent_clause = trim($this->subjects[$i]).' '.$verb.$adverb.' '.trim($this->nominal_groups[($i+1)*2]);
 
       $newspeak_form = rand(0,1);
       if( $newspeak_form )
@@ -65,10 +67,10 @@ class ACNewspeak {
       $newspeak = str_replace(' à le', ' au', $newspeak);
       $newspeak = str_replace('oe', '&oelig;', $newspeak);
       
-      //TODO fix: non breaking spaces after prepositions
-      $newspeak = preg_replace('%( |&nbsp;)(à|le|les|la|au|de|du|des|et|sup>|un|une|par|ce|ces|cette|en>) %i', '$1$2&nbsp;', $newspeak);
-      $newspeak = preg_replace('%( |&nbsp;)(à|le|les|la|au|de|du|des|et|sup>|un|une|par|ce|ces|cette|en>) %i', '$1$2&nbsp;', $newspeak); 
-
+      //Non breaking spaces after prepositions (TODO fix)
+      $newspeak = preg_replace('%([^a-zA-Zâéèï])(à|le|les|la|au|de|du|des|et|sup>|un|une|ce|ces|cette|en>) %i', '$1$2&nbsp;', $newspeak);
+      $newspeak = preg_replace('%([^a-zA-Zâéèï])(à|le|les|la|au|de|du|des|et|sup>|un|une|ce|ces|cette|en>) %i', '$1$2&nbsp;', $newspeak);
+      
       $newspeak = mb_ucfirst($newspeak).'.';
 
       return $newspeak;
